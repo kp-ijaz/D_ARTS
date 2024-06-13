@@ -1,5 +1,5 @@
-import 'package:d_art/application/controller/servicecontroller.dart';
-import 'package:d_art/presentation/widgets/AfterLoginPage/profilecompletion.dart';
+import 'package:d_art/controller/controller/servicecontroller.dart';
+import 'package:d_art/view/widgets/AfterLoginPage/profilecompletion.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -90,7 +90,7 @@ class ServiceSelectionPage extends StatelessWidget {
                     Get.snackbar('Error', 'Please select a service',
                         snackPosition: SnackPosition.BOTTOM);
                   } else {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (builder) => ProfileCompletionPage(
                               job: controller.selectedService.value,
                             )));

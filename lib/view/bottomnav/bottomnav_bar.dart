@@ -1,24 +1,23 @@
-import 'package:d_art/application/controller/bottomnavbarcontroller.dart';
-import 'package:d_art/presentation/serviceprovider/addscreen.dart';
-import 'package:d_art/presentation/serviceprovider/profilescreen.dart';
-import 'package:d_art/presentation/serviceprovider/searchscreen.dart';
-import 'package:d_art/presentation/serviceprovider/serviceHome.dart';
-import 'package:dot_navigation_bar/dot_navigation_bar.dart';
+import 'package:d_art/view/serviceprovider/addscreen.dart';
+import 'package:d_art/view/serviceprovider/profilescreen.dart';
+import 'package:d_art/view/serviceprovider/searchscreen.dart';
+import 'package:d_art/view/serviceprovider/serviceHome.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dot_navigation_bar/dot_navigation_bar.dart';
+
+import 'package:d_art/controller/controller/bottomnavbarcontroller.dart';
 
 class BottomNavBar extends StatelessWidget {
   final BottomNavBarController controller = Get.put(BottomNavBarController());
 
-  BottomNavBar({super.key, required Map<String, dynamic> profileData});
+  BottomNavBar({super.key});
 
   final List<Widget> _screens = [
     ServiceHome(),
     const SearchScreen(),
     const AddWorkScreen(),
-    ProfilePage(
-      profileData: {},
-    ),
+    ProfilePage(),
   ];
 
   @override

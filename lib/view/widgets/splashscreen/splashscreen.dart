@@ -1,6 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 // import 'package:d_art/presentation/bottomnav/bottomnav_bar.dart';
-import 'package:d_art/presentation/widgets/Loginpage/loginpage.dart';
+import 'package:d_art/view/widgets/Loginpage/loginpage.dart';
+import 'package:d_art/view/widgets/landingPages/firstpage.dart';
 // import 'package:d_art/presentation/widgets/Loginpage/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -30,7 +31,7 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
       backgroundColor: const Color(0xFF1D1D9C),
-      nextScreen: Loginpage(),
+      nextScreen: StartPage(),
       splashIconSize: 350,
       duration: 1350,
       splashTransition: SplashTransition.fadeTransition,

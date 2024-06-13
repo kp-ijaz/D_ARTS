@@ -1,4 +1,4 @@
-import 'package:d_art/application/controller/captioncontroller.dart';
+import 'package:d_art/controller/controller/captioncontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

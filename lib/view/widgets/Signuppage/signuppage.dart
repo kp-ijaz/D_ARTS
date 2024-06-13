@@ -1,7 +1,7 @@
 import 'dart:developer';
-import 'package:d_art/application/controller/auth_service.dart';
-import 'package:d_art/presentation/widgets/Loginpage/loginpage.dart';
-import 'package:d_art/presentation/widgets/commonwidgets/textformfield.dart';
+import 'package:d_art/controller/controller/auth_service.dart';
+import 'package:d_art/view/widgets/Loginpage/loginpage.dart';
+import 'package:d_art/view/widgets/commonwidgets/textformfield.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sign_in_button/sign_in_button.dart';

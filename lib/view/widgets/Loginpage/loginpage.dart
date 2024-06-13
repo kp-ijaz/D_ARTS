@@ -1,23 +1,28 @@
 import 'dart:developer';
 
-import 'package:d_art/application/controller/auth_service.dart';
-import 'package:d_art/presentation/widgets/AfterLoginPage/messagepage.dart';
-import 'package:d_art/presentation/widgets/Signuppage/signuppage.dart';
-import 'package:d_art/presentation/widgets/commonwidgets/textformfield.dart';
+import 'package:d_art/controller/controller/auth_service.dart';
+import 'package:d_art/controller/controller/logincontroller.dart';
+import 'package:d_art/view/widgets/AfterLoginPage/messagepage.dart';
+import 'package:d_art/view/widgets/Signuppage/signuppage.dart';
+import 'package:d_art/view/widgets/commonwidgets/textformfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:get/get.dart';
+
+// import 'login_controller.dart'; // Import the controller
 
 class Loginpage extends StatelessWidget {
   Loginpage({super.key});
 
   final _auth = AuthService();
-
   final _email = TextEditingController();
   final _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final LoginController loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +118,16 @@ class Loginpage extends StatelessWidget {
                     style: TextStyle(fontSize: 19),
                   ),
                 ),
-                SignInButton(
-                  Buttons.google,
-                  onPressed: () => signInWithGoogle(context),
-                ),
+                Obx(() {
+                  if (loginController.isLoading.value) {
+                    return const CircularProgressIndicator();
+                  } else {
+                    return SignInButton(
+                      Buttons.google,
+                      onPressed: () => signInWithGoogle(context),
+                    );
+                  }
+                }),
               ],
             ),
           ),
@@ -125,7 +136,7 @@ class Loginpage extends StatelessWidget {
     );
   }
 
-  gotoHome(BuildContext context) => Navigator.push(
+  gotoHome(BuildContext context) => Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MessagePage()),
       );
@@ -162,10 +173,12 @@ class Loginpage extends StatelessWidget {
   }
 
   signInWithGoogle(BuildContext context) async {
-    log('message jiiii');
+    loginController.setLoading(true);
+
     try {
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       log('message');
+
       if (googleUser != null) {
         GoogleSignInAuthentication? googleAuth =
             await googleUser.authentication;
@@ -173,7 +186,8 @@ class Loginpage extends StatelessWidget {
             accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
-        Navigator.push(
+
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MessagePage()),
         );
@@ -184,6 +198,8 @@ class Loginpage extends StatelessWidget {
       }
     } catch (e) {
       log('ERROR ON AUTH LOGIN >> : $e');
+    } finally {
+      loginController.setLoading(false);
     }
   }
 }

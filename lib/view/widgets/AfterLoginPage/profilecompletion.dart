@@ -1,12 +1,10 @@
-// import 'dart:developer';
-
-import 'package:d_art/application/controller/profileController.dart';
-import 'package:d_art/presentation/serviceprovider/profilescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-// import 'serviceselectionpage.dart';
+import 'package:d_art/controller/controller/profileController.dart';
+import 'package:d_art/view/bottomnav/bottomnav_bar.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileCompletionPage extends StatelessWidget {
   final String job;
@@ -48,6 +46,19 @@ class ProfileCompletionPage extends StatelessWidget {
                           : null,
                     )),
               ),
+              Obx(() {
+                if (controller.imageError.value.isNotEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      controller.imageError.value,
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }),
               const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
@@ -162,9 +173,17 @@ class ProfileCompletionPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        _showProfile(context);
+                        if (controller.imagePath.value.isEmpty) {
+                          controller.imageError.value =
+                              'Please select an image';
+                        } else {
+                          controller.imageError.value = '';
+                          await controller.saveProfile();
+
+                          _showProfile(context);
+                        }
                       }
                     },
                     child: const Text('Complete'),
@@ -183,21 +202,13 @@ class ProfileCompletionPage extends StatelessWidget {
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       controller.imagePath.value = pickedFile.path;
+      controller.imageError.value = '';
     }
   }
 
   void _showProfile(BuildContext context) {
-    final profileData = {
-      'Name': controller.name.value,
-      'Phone': controller.phone.value,
-      'Location': controller.location.value,
-      'Bio': controller.bio.value,
-      'Job': controller.job.value,
-      'Experience': controller.experience.value,
-    };
-
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ProfilePage(profileData: profileData),
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => BottomNavBar(),
     ));
   }
 }

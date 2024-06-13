@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileController extends GetxController {
   var name = ''.obs;
@@ -10,8 +13,10 @@ class ProfileController extends GetxController {
   var job = ''.obs;
   var experience = ''.obs;
   var imagePath = ''.obs;
+  var imageError = ''.obs;
 
   var isLoading = false.obs;
+  var isScrolled = false.obs;
 
   Future<void> fetchLocation() async {
     bool serviceEnabled;
@@ -19,37 +24,29 @@ class ProfileController extends GetxController {
 
     isLoading.value = true;
 
-    // Check if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       isLoading.value = false;
-      // Prompt user to enable location services
       await _enableLocation();
       return;
     }
 
-    // Check location permission
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      // Request location permission
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         isLoading.value = false;
-        // Permission denied, show message or navigate to settings
         _showLocationPermissionDeniedSnackbar();
         return;
       }
     }
 
-    // Handle deniedForever case
     if (permission == LocationPermission.deniedForever) {
       isLoading.value = false;
-      // Permission denied forever, show message or navigate to settings
       _showLocationPermissionDeniedForeverSnackbar();
       return;
     }
 
-    // Fetch current location
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -60,17 +57,72 @@ class ProfileController extends GetxController {
       location.value =
           '${place.locality}, ${place.administrativeArea}, ${place.country}';
     } catch (e) {
-      // Handle location fetch error
       _showLocationFetchErrorSnackbar();
     } finally {
       isLoading.value = false;
     }
   }
 
+  Future<void> saveProfile() async {
+    if (imagePath.value.isEmpty) {
+      imageError.value = 'Please select an image';
+      return;
+    }
+
+    imageError.value = '';
+    try {
+      isLoading.value = true;
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection('profiles').doc(userId).set({
+        'name': name.value,
+        'phone': phone.value,
+        'location': location.value,
+        'bio': bio.value,
+        'job': job.value,
+        'experience': experience.value,
+        'imagePath': imagePath.value,
+      });
+      isLoading.value = false;
+      Get.snackbar('Success', 'Profile updated successfully');
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('Error', 'Failed to update profile: $e');
+    }
+  }
+
+  Future<void> updateProfile() async {
+    if (imagePath.value.isEmpty) {
+      imageError.value = 'Please select an image';
+      return;
+    }
+
+    imageError.value = '';
+    try {
+      isLoading.value = true;
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance
+          .collection('profiles')
+          .doc(userId)
+          .update({
+        'name': name.value,
+        'phone': phone.value,
+        'location': location.value,
+        'bio': bio.value,
+        'job': job.value,
+        'experience': experience.value,
+        'imagePath': imagePath.value,
+      });
+      isLoading.value = false;
+      Get.snackbar('Success', 'Profile updated successfully');
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('Error', 'Failed to update profile: $e');
+    }
+  }
+
   Future<void> _enableLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Open location settings
       await Geolocator.openLocationSettings();
     }
   }
@@ -100,5 +152,15 @@ class ProfileController extends GetxController {
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: 5),
     );
+  }
+
+  void updateScrollPosition(ScrollController scrollController) {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels > 0) {
+        isScrolled.value = true;
+      } else {
+        isScrolled.value = false;
+      }
+    });
   }
 }

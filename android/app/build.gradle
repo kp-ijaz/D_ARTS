@@ -29,6 +29,7 @@ android {
     namespace "com.example.d_art"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

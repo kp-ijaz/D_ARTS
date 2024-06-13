@@ -1,4 +1,4 @@
-import 'package:d_art/presentation/widgets/AfterLoginPage/choicepage.dart';
+import 'package:d_art/view/widgets/AfterLoginPage/serviceselectionpage.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -54,8 +54,8 @@ class MessagePage extends StatelessWidget {
                       minimumSize: const Size(double.infinity, 50),
                     ),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (builder) => ChoicePage()));
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (builder) => ServiceSelectionPage()));
                     },
                     child: const Text(
                       'continue',
